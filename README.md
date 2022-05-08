@@ -2,7 +2,7 @@
 
 A fresh cloud application using Kotlin and Spring that includes a single web application.
 
-## Docker
+## Run locally with Docker
 
 Building with docker.
 
@@ -10,10 +10,10 @@ Building with docker.
 docker build -t kotlin-spring-starter . 
 ```
 
-_Note_ - use `--platform linux/amd64` for deploying to google cloud.
+Running with docker compose.
 
 ```bash
-docker build --platform linux/amd64 -t kotlin-spring-starter . 
+docker-compose up 
 ```
 
 ## Deploy with Fresh Cloud
