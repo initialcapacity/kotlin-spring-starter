@@ -1,1 +1,1 @@
-# kotlin-spring-starter
+# Kotlin spring example
