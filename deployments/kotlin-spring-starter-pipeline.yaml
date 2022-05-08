@@ -1,0 +1,127 @@
+resource_types:
+  - name: kpack-image
+    type: registry-image
+    source:
+      repository: gcr.io/cf-build-service-public/concourse-kpack-resource
+      tag: "1.0"
+
+resources:
+  - name: kotlin-spring-starter-image
+    type: registry-image
+    source:
+      repository: registry.${REGISTRY_DOMAIN}/kpack/kotlin-spring-starter
+
+  - name: fresch-cloud-source-code
+    type: git
+    source:
+      uri: https://github.com/initialcapacity/freshcloud
+      branch: golang_spike
+
+  - name: kotlin-spring-starter-source-code
+    type: git
+    source:
+      uri: https://github.com/initialcapacity/kotlin-spring-starter
+      branch: main
+
+  - name: kotlin-spring-starter-build-service
+    type: kpack-image
+    source:
+      image: kotlin-spring-starter-image
+      namespace: kotlin-spring-starter
+      gke:
+        json_key: ((service-account-key))
+        kubeconfig: ((kubeconfig))
+
+  - name: kubernetes-task-image
+    type: registry-image
+    source:
+      repository: registry.${REGISTRY_DOMAIN}/concourse-images/cluster-mgmt
+      tag: latest
+
+jobs:
+  - name: vulnerability-scan
+    plan:
+      - task: sleep
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: ubuntu
+              tag: bionic
+          run:
+            path: /bin/sleep
+            args: [ 5s ]
+      - in_parallel:
+          - get: kotlin-spring-starter-source-code
+          - get: kotlin-spring-starter-build-service
+            trigger: true
+            passed: [ build-kotlin-spring-starter-image ]
+          - get: kotlin-spring-starter-image
+      - task: trivy-fs
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: aquasec/trivy
+          inputs:
+            - name: kotlin-spring-starter-image
+          caches:
+            - path: trivy-cache
+          run:
+            path: sh
+            args:
+              - -cex
+              - |
+                trivy --cache-dir trivy-cache fs --severity HIGH,CRITICAL --vuln-type library,os --ignore-unfixed --exit-code 0 kotlin-spring-starter-image/rootfs
+  - name: build-kotlin-spring-starter-image
+    plan:
+      - get: kotlin-spring-starter-source-code
+        trigger: true
+      - put: kotlin-spring-starter-build-service
+        params:
+          commitish: kotlin-spring-starter-source-code/.git/ref
+
+  - name: deploy-kotlin-spring-starter
+    plan:
+      - get: fresch-cloud-source-code
+      - get: kotlin-spring-starter-source-code
+      - get: kotlin-spring-starter-build-service
+        passed:
+          - vulnerability-scan
+        trigger: true
+      - get: kubernetes-task-image
+      - task: deploy-kubernetes
+        image: kubernetes-task-image
+        config:
+          platform: linux
+          inputs:
+            - name: fresch-cloud-source-code
+            - name: kotlin-spring-starter-source-code
+          params:
+            KUBECONFIG: ((kubeconfig))
+            DOMAIN: ((domain))
+            GCP_PROJECT_ID: ((gcp_project_id))
+            GCP_ZONE: ((gcp_zone))
+            GCP_CLUSTER_NAME: ((gcp_cluster_name))
+            GCP_SERVICE_ACCOUNT_JSON: ((service_account_json))
+          run:
+            path: sh
+            args:
+            - -sc
+            - |
+              echo "${DOLLAR}KUBECONFIG" > config.yml
+              export KUBECONFIG=config.yml
+              export IMAGE=$(kubectl get image kotlin-spring-starter-image -n kotlin-spring-starter -o jsonpath="{.status.latestImage}")
+              envsubst < ./kotlin-spring-starter-source-code/deployments/kotlin-spring-starter.yaml > kotlin-spring-starter.yaml
+              unset KUBECONFIG
+
+              export cred_file=$(mktemp)
+              trap "rm ${cred_file}" EXIT
+              echo "${DOLLAR}{GCP_SERVICE_ACCOUNT_JSON}" > ${DOLLAR}{cred_file}
+              chmod 600 ${DOLLAR}{cred_file}
+              gcloud auth login --cred-file "${DOLLAR}{cred_file}" --quiet
+              gcloud container clusters get-credentials ${DOLLAR}{GCP_CLUSTER_NAME} --zone ${DOLLAR}{GCP_ZONE} --project ${DOLLAR}{GCP_PROJECT_ID}
+              kubectl create namespace kotlin-spring-starter
+              kubectl apply -f kotlin-spring-starter.yaml

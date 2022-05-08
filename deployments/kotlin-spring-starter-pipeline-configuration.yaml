@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kotlin-spring-starter-service-account
+  namespace: kotlin-spring-starter
+secrets:
+  - name: kotlin-spring-starter-registry-credentials
+imagePullSecrets:
+  - name: kotlin-spring-starter-registry-credentials
+---
+apiVersion: kpack.io/v1alpha1
+kind: Builder
+metadata:
+  name: kotlin-spring-starter-builder
+  namespace: kotlin-spring-starter
+spec:
+  serviceAccount: kotlin-spring-starter-service-account
+  tag: registry.$REGISTRY_DOMAIN/kpack/builder
+  stack:
+    name: base
+    kind: ClusterStack
+  store:
+    name: default
+    kind: ClusterStore
+  order:
+    - group:
+        - id: heroku/java
+---
+apiVersion: kpack.io/v1alpha1
+kind: Image
+metadata:
+  name: kotlin-spring-starter-image
+  namespace: kotlin-spring-starter
+spec:
+  tag: registry.$REGISTRY_DOMAIN/kpack/kotlin-spring-starter
+  serviceAccount: kotlin-spring-starter-service-account
+  builder:
+    name: kotlin-spring-starter-builder
+    kind: Builder
+  source:
+    git:
+      url: https://github.com/initialcapacity/kotlin-spring-starter
+      revision: main
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: kotlin-spring-starter
+  name: kotlin-spring-starter-image-role
+rules:
+  - apiGroups: [ "kpack.io", "", "networking.k8s.io", "apps" ]
+    resources: [ "images", "builds", "pods", "pods/log", "services", "ingresses", "deployments" ]
+    verbs: [ "get", "list", "watch", "create", "update", "patch", "delete" ]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kotlin-spring-starter-image-role-binding
+  namespace: kotlin-spring-starter
+subjects:
+  - kind: ServiceAccount
+    name: kotlin-spring-starter-service-account
+    apiGroup: ""
+roleRef:
+  kind: Role
+  name: kotlin-spring-starter-image-role
+  apiGroup: ""

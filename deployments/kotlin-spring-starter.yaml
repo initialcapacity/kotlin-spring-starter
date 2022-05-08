@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kotlin-spring-starter
+    source: freshcloud
+  name: kotlin-spring-starter
+  namespace: kotlin-spring-starter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kotlin-spring-starter
+  template:
+    metadata:
+      labels:
+        app: kotlin-spring-starter
+    spec:
+      containers:
+        - image: ${IMAGE}
+          name: kotlin-spring-starter
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          env:
+            - name: PORT
+              value: '8888'
+            - name: APP
+              value: ./build/libs/kotlin-spring-starter-0.0.1-SNAPSHOT.jar  --server.port=8888
+          ports:
+            - containerPort: 8888
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kotlin-spring-starter
+  name: kotlin-spring-starter
+  namespace: kotlin-spring-starter
+spec:
+  ports:
+    - port: 8888
+      protocol: TCP
+      targetPort: 8888
+  selector:
+    app: kotlin-spring-starter
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kotlin-spring-starter
+  namespace: kotlin-spring-starter
+  labels:
+    app: kotlin-spring-starter
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: contour
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    projectcontour.io/websocket-routes: "/"
+    kubernetes.io/tls-acme: "true"
+spec:
+  rules:
+    - host: kotlin-spring-starter.${DOMAIN}
+      http:
+        paths:
+          - backend:
+              service:
+                name: kotlin-spring-starter
+                port:
+                  number: 8888
+            pathType: ImplementationSpecific
+  tls:
+    - hosts:
+        - kotlin-spring-starter.${DOMAIN}
+      secretName: kotlin-spring-starter-cert
