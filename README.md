@@ -22,7 +22,7 @@ Deploy the kotlin-spring-starter to an existing fresh cloud application cluster.
 
 Create a `.env_app.sh` file.
 
-```bash
+```
 export GCP_PROJECT_ID=
 export GCP_ZONE=
 export GCP_CLUSTER_NAME=
@@ -36,9 +36,9 @@ export EMAIL_ADDRESS=
 
 export APP_NAME=kotlin-spring-starter
 export APP_IMAGE_NAME=kotlin-spring-starter
-export APP_CONFIGURATION_PATH=./deployments/kotlin-spring-starter.yaml
-export APP_PIPELINE_CONFIGURATION_PATH=/deployments/kotlin-spring-starter-pipeline-configuration.yaml
-export APP_PIPELINE_PATH=/deployments/kotlin-spring-starter-pipeline.yaml
+export APP_CONFIGURATION_PATH=./deployments/kotlin-spring-starter.yml
+export APP_PIPELINE_CONFIGURATION_PATH=./deployments/kotlin-spring-starter-pipeline-configuration.yaml
+export APP_PIPELINE_PATH=./deployments/kotlin-spring-starter-pipeline.yaml
 ```
 
 Source the file.
