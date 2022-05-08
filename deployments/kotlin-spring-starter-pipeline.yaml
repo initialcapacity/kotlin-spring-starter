@@ -15,7 +15,7 @@ resources:
     type: git
     source:
       uri: https://github.com/initialcapacity/freshcloud
-      branch: golang_spike
+      branch: main
 
   - name: kotlin-spring-starter-source-code
     type: git
