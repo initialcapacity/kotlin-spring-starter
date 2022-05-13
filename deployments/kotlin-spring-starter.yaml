@@ -27,6 +27,8 @@ spec:
           env:
             - name: PORT
               value: '8888'
+            - name: OPA_SERVER_URL
+              value: http://opa-server-agent.kotlin-spring-starter.svc.cluster.local:8887/v1/data/authz/allow
             - name: APP
               value: ./build/libs/kotlin-spring-starter-0.0.1-SNAPSHOT.jar  --server.port=8888
           ports:

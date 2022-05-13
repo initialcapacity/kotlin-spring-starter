@@ -16,15 +16,18 @@ repositories {
 }
 
 dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-webflux:2.6.7")
     implementation("org.springframework.boot:spring-boot-starter-actuator:2.6.7")
     implementation("org.springframework.boot:spring-boot-starter-web:2.6.7")
     implementation("org.springframework.boot:spring-boot-starter-freemarker:2.6.7")
     implementation("org.springframework.boot:spring-boot-starter-security:2.6.7")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.2")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:2.6.7")
     testImplementation("org.springframework.security:spring-security-test:5.6.3")
+    testImplementation("com.ninja-squad:springmockk:3.1.1")
 }
 
 tasks.withType<KotlinCompile> {
