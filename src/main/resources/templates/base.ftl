@@ -1,6 +1,7 @@
 <#macro layout currentResource>
     <html lang="en">
     <head>
+        <link rel="stylesheet" type="text/css" href="../static/style.css"/>
         <meta name=viewport content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="/reset.css">
         <link rel="stylesheet" href="/style.css">
@@ -16,7 +17,8 @@
     </header>
     <section class="callout">
         <div class="container">
-            a <span class="branded">FreshCloud[]</span> application.
+            a <span class="branded">FreshCloud[]</span> application with
+            <span class="branded">hexa</span> and <span class="branded">opa</span> support.
             <p>Current page /${currentResource}</p>
         </div>
     </section>
