@@ -1,6 +1,6 @@
 <#import "base.ftl" as base>
 
-<@base.layout>
+<@base.layout currentResource="access-denied">
     <section>
         <div class="container">
             <h2>Access Denied</h2>

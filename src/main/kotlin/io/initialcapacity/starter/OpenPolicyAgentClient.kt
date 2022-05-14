@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate
 @Service
 class OpenPolicyAgentClient {
     @Value("\${opa.server.url}")
-    private var opaServerUrl: String = "http://localhost:8881/v1/data/authz/allow"
+    private var opaServerUrl: String = "http://localhost:8887/v1/data/authz/allow"
 
     fun allowFor(input: OpenPolicyAgentInput): Boolean {
         val mapper = ObjectMapper().registerKotlinModule()

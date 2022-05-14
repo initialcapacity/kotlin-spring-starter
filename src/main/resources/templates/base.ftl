@@ -1,4 +1,4 @@
-<#macro layout>
+<#macro layout currentResource>
     <html lang="en">
     <head>
         <meta name=viewport content="width=device-width, initial-scale=1">
@@ -16,7 +16,8 @@
     </header>
     <section class="callout">
         <div class="container">
-            a <span class="branded">FreshCloud[]</span> application
+            a <span class="branded">FreshCloud[]</span> application.
+            <p>Current page /${currentResource}</p>
         </div>
     </section>
     <main>
