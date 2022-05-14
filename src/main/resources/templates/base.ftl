@@ -19,7 +19,6 @@
         <div class="container">
             a <span class="branded">FreshCloud[]</span> application with
             <span class="branded">hexa</span> and <span class="branded">opa</span> support.
-            <p>Current page /${currentResource}</p>
         </div>
     </section>
     <main>
