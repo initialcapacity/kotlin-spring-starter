@@ -22,6 +22,8 @@ Build with docker.
 docker build -t kotlin-spring-starter . 
 ```
 
+Note - you'll also need to build the [hexa](https://hexaorchestration.org/) container.
+
 Running with docker compose.
 
 ```bash

@@ -1,9 +1,28 @@
 services:
   basic-server:
     image: kotlin-spring-starter
-    container_name: basic-server
+    container_name: kotlin-spring-server
     ports:
       - "8888:8888"
     environment:
       PORT: 8888
       APP: ./build/libs/kotlin-spring-starter-0.0.1-SNAPSHOT.jar
+      OPA_SERVER_URL: http://kotlin-spring-opa-server:8887/v1/data/authz/allow
+  opa-agent:
+    image: openpolicyagent/opa
+    container_name: kotlin-spring-opa-server
+    ports:
+      - "8887:8887"
+    command: run --server --addr :8887 -c /home/config/config.yaml
+    environment:
+      BUNDLE_URL: "http://kotlin-spring-hexa-demo-config:8889"
+    volumes:
+      - "./deployments/open-policy-agent/config:/home/config:ro"
+  demo-app-config:
+    image: hexa
+    container_name: kotlin-spring-hexa-demo-config
+    ports:
+      - "8889:8889"
+    command: democonfig
+    environment:
+      PORT: 8889

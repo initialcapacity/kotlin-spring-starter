@@ -1,0 +1,14 @@
+services:
+  - name: test
+    url: ${BUNDLE_URL}
+bundles:
+  authz:
+    service: test
+    resource: bundles/bundle.tar.gz
+    persist: true
+    polling:
+      min_delay_seconds: 4
+      max_delay_seconds: 16
+
+decision_logs:
+  console: true
