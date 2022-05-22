@@ -1,10 +1,22 @@
-# Kotlin spring example
+# Kotlin spring starter
 
-A fresh cloud application using Kotlin and Spring that includes a single web application.
+A [FreshCloud](https://www.freshcloud.com/) style example using Kotlin and Spring
+that includes a single web application with [hexa](https://hexaorchestration.org/) 
+and [open policy agent](https://www.openpolicyagent.org/) support
+Deployed via [Fresh Cloud](https://www.freshcloud.com/).
 
-## Run locally with Docker
 
-Building with docker.
+The example showcases on the below technologies -
+* Language [Kotlin](https://kotlinlang.org)
+* Web Framework [Spring](https://spring.io/) and [Freemarker](https://freemarker.apache.org)
+* Testing tools [JUnit](https://junit.org/)
+* Security orchestration [hexa](https://hexaorchestration.org/)
+* Security decision [open policy agent](https://www.openpolicyagent.org/)
+* Production [FreshCloud](https://www.freshcloud.com/) on Google's Cloud Platform
+
+## Getting Started
+
+Build with docker.
 
 ```bash
 docker build -t kotlin-spring-starter . 
@@ -16,43 +28,8 @@ Running with docker compose.
 docker-compose up 
 ```
 
-## Deploy with Fresh Cloud
+## Deployment
 
-Deploy the kotlin-spring-starter to an existing fresh cloud application cluster.
-
-Create a `.env_app.sh` file.
-
-```
-export GCP_PROJECT_ID=
-export GCP_ZONE=
-export GCP_CLUSTER_NAME=
-export GCP_SERVICE_ACCOUNT_JSON=
-
-export REGISTRY_DOMAIN=
-export REGISTRY_PASSWORD=
-export REGISTRY_CLUSTER_NAME=
-export DOMAIN=
-export EMAIL_ADDRESS=
-
-export APP_NAME=kotlin-spring-starter
-export APP_IMAGE_NAME=kotlin-spring-starter
-export APP_CONFIGURATION_PATH=./deployments/kotlin-spring-starter.yml
-export APP_PIPELINE_CONFIGURATION_PATH=./deployments/kotlin-spring-starter-pipeline-configuration.yaml
-export APP_PIPELINE_PATH=./deployments/kotlin-spring-starter-pipeline.yaml
-```
-
-Source the file.
-
-```bash
-source .env_app.sh
-```
-
-Run the below fresh cloud commands.
-
-```bash
-~/go/bin/freshctl clusters gcp configure
-~/go/bin/freshctl clusters gcp create-service-account
-~/go/bin/freshctl pipelines deploy
-```
+Fresh cloud deployment and pipeline files are located in `deployments`.
 
 That's a wrap for now.
